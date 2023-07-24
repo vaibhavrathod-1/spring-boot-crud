@@ -1,0 +1,52 @@
+pipeline:
+  name: test-sb
+  identifier: testsb
+  projectIdentifier: Demo
+  orgIdentifier: default
+  tags: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: vaibhav
+        repoName: spring-boot-crud-app
+        build: <+input>
+  stages:
+    - stage:
+        name: build
+        identifier: build
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Run_1
+                  identifier: Run_1
+                  spec:
+                    shell: Sh
+                    command: |-
+                      sudo apt update
+                      sudo apt install -y openjdk-11-jdk
+                      java -version
+                      sudo apt-get install -y maven
+                      mvn -version
+                      mvn clean package
+              - step:
+                  type: BuildAndPushECR
+                  name: BuildAndPushECR_1
+                  identifier: BuildAndPushECR_1
+                  spec:
+                    connectorRef: vaibhav_aws
+                    region: ap-south-1
+                    account: "779527285137"
+                    imageName: hsltest
+                    tags:
+                      - v1
